@@ -23,6 +23,24 @@ route.get("/:id", async (req, res, next) => {
   }
 });
 
+route.get("/stats", async (req, res, next) => {
+  try {
+    const {
+      countBy,
+      value
+    } = req.query;
+    const queryText = `SELECT COUNT(student.${countBy}) AS count,student.${countBy} FROM public.students as student WHERE student.${countBy}='${value}' GROUP BY student.${countBy}`;
+    const {
+      rows
+    } = await db.query(queryText);
+    res.send(rows);
+  } catch (error) {
+    res.status(500).send({
+      message: error.message
+    });
+  }
+});
+
 route.post("/", async (req, res, next) => {
   try {
     const response = await Students.create(req.body);
